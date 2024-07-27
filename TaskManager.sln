@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api", "Api\Api.csproj", "{38BFD295-A8B0-40A9-ABD5-509593A65922}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "Application\Application.csproj", "{A6266455-3696-468D-80A3-8BA8985BFD3E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{60E964A4-5414-4648-9769-944AFD437AC4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Domain\Domain.csproj", "{80CE56DB-5C31-45E6-88BA-1D9ED9B565F9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{D78B1781-42E3-48A8-8817-777CB5757C46}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{04DE5931-C88F-4A6C-9B07-5947444F9A20}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{38BFD295-A8B0-40A9-ABD5-509593A65922}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38BFD295-A8B0-40A9-ABD5-509593A65922}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A6266455-3696-468D-80A3-8BA8985BFD3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6266455-3696-468D-80A3-8BA8985BFD3E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{80CE56DB-5C31-45E6-88BA-1D9ED9B565F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{80CE56DB-5C31-45E6-88BA-1D9ED9B565F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{60E964A4-5414-4648-9769-944AFD437AC4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{60E964A4-5414-4648-9769-944AFD437AC4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D78B1781-42E3-48A8-8817-777CB5757C46}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D78B1781-42E3-48A8-8817-777CB5757C46}.Release|Any CPU.Build.0 = Release|Any CPU
+		{04DE5931-C88F-4A6C-9B07-5947444F9A20}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{04DE5931-C88F-4A6C-9B07-5947444F9A20}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

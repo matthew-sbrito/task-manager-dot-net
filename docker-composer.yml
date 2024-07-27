@@ -1,0 +1,35 @@
+version: '3.4'
+
+services:
+  task-manager-db:
+    container_name: task-manager-db
+    image: postgres
+    restart: always    
+    environment:
+      - POSTGRES_USER=task-manager-user
+      - POSTGRES_PASSWORD=12345678
+      - POSTGRES_DB=task-manager-db
+    networks:
+      - task-manager-app
+    ports:
+      - "5432:5432"
+
+  task-manager-api:
+    container_name: task-manager-api
+    image: task-manager-api
+    restart: always
+    depends_on:
+      - task-manager-db
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - ENVIRONMENT_NAME=Development
+    networks:
+      - task-manager-app
+    ports:
+      - "8080:8080"
+
+networks:
+  task-manager-app:
+    driver: bridge

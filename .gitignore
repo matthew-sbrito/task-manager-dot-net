@@ -1,0 +1,19 @@
+# bin folders
+bin
+obj
+
+# Rider files
+/.idea
+
+# Azure Function Project
+# Azure Functions localsettings file
+local.settings.json
+
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# User-specific files (MonoDevelop/Xamarin Studio)
+*.userprefs
