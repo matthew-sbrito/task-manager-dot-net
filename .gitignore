@@ -5,6 +5,9 @@ obj
 # Rider files
 /.idea
 
+# VS files
+/.vs
+
 # Azure Function Project
 # Azure Functions localsettings file
 local.settings.json

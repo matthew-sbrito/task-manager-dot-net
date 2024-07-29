@@ -1,6 +1,6 @@
 namespace Application.DTOs.Request;
 
-public class ProjectRequestDto
+public class UpdateProjectDto
 {
-    
+
 }

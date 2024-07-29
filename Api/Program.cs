@@ -1,26 +1,68 @@
 using Application.Extensions;
+using Microsoft.OpenApi.Models;
+using Asp.Versioning;
+using Api.Extensions;
+using Api.Filters;
+using Api.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
 // Application configuration
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var apiVersion = new ApiVersion(1, 0);
 
 if (string.IsNullOrWhiteSpace(connectionString))
-{
     throw new ApplicationException("Invalid connection string ");
-}
 
+builder.Services.AddSwaggerGen(swaggerGenOptions =>
+{
+    swaggerGenOptions.SwaggerDoc("v1", new OpenApiInfo { Title = "Task Manager API", Version = "v1.0" });
+    swaggerGenOptions.OperationFilter<RequiredHeaderParameterFilter>();
+});
+
+// Add default services to the container.
 builder.Services
-    .AddExecuteDbUpMigrations(connectionString)
+    .AddEndpointsApiExplorer()
+    .AddSwaggerGen()
+    .AddApiVersioning(options =>
+    {
+        options.DefaultApiVersion = apiVersion;
+        options.ApiVersionReader = new UrlSegmentApiVersionReader();
+    }).AddApiExplorer(options =>
+    {
+        options.GroupNameFormat = "'v'V";
+        options.SubstituteApiVersionInUrl = true;
+    });
+
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
+// Add app services to the container.
+builder.Services
+    .AddAutoMapper(typeof(Program))
+    .MapAutoMapper()
+    .ExecuteDbUpMigrations(connectionString)
     .AddDatabase(connectionString)
-    .AddServices();
+    .AddServices()
+    .AddInitializers()
+    .AddTransient<HandleExceptionMiddleware>()
+    .AddEndpoints()
+    .AddHttpContextAccessor();
 
 var app = builder.Build();
+
+var apiVersionSet = app.NewApiVersionSet()
+    .HasApiVersion(apiVersion)
+    .ReportApiVersions()
+    .Build();
+
+var versionGroup = app
+    .MapGroup("api/v{version:apiVersion}")
+    .WithApiVersionSet(apiVersionSet);
+
+app
+    .MapEndpoints(versionGroup)
+    .UseMiddleware<HandleExceptionMiddleware>()
+    .UseHttpsRedirection();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -29,31 +71,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
-
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-    {
-        var forecast = Enumerable.Range(1, 5).Select(index =>
-                new WeatherForecast
-                (
-                    DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                    Random.Shared.Next(-20, 55),
-                    summaries[Random.Shared.Next(summaries.Length)]
-                ))
-            .ToArray();
-        return forecast;
-    })
-    .WithName("GetWeatherForecast")
-    .WithOpenApi();
+await app.RunInitializers();
 
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}

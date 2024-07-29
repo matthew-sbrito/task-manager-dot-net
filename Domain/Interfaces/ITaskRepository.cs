@@ -1,6 +1,6 @@
 namespace Domain.Interfaces;
 
-public class TaskRepository
+public interface ITaskRepository
 {
     
 }

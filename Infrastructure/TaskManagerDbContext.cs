@@ -1,3 +1,4 @@
+using Common.Helpers;
 using Domain.Entities;
 using Infrastructure.Configurations;
 using Microsoft.EntityFrameworkCore;
@@ -26,6 +27,9 @@ public class TaskManagerDbContext(DbContextOptions<TaskManagerDbContext> options
     {
         modelBuilder.HasDefaultSchema("public");
 
+        modelBuilder.Entity<AuditableEntity>()
+            .HasQueryFilter(x => x.DeletedAt == null);
+
         modelBuilder.ApplyConfiguration(new UserEntityConfiguration());
         modelBuilder.ApplyConfiguration(new ProjectEntityConfiguration());
         modelBuilder.ApplyConfiguration(new TaskEntityConfiguration());
@@ -42,7 +46,7 @@ public class TaskManagerDbContext(DbContextOptions<TaskManagerDbContext> options
         foreach (var entry in modifiedEntries)
         {
             var entity = entry.Entity;
-            var now = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc);
+            var now = DateTimeHelper.UtcNow();
 
             if (entry.State == EntityState.Added)
             {

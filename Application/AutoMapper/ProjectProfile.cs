@@ -10,6 +10,6 @@ public class ProjectProfile : Profile
     public ProjectProfile()
     {
         CreateMap<ProjectEntity, ProjectResponseDto>();
-        CreateMap<ProjectRequestDto, ProjectEntity>();
+        CreateMap<UpdateProjectDto, ProjectEntity>();
     }
 }

@@ -15,7 +15,7 @@ public class ProjectEntityConfiguration : IEntityTypeConfiguration<ProjectEntity
         
         builder.Property(e => e.Title)
             .HasMaxLength(55)
-            .HasColumnName("name");
+            .HasColumnName("title");
         
         builder.Property(e => e.Description)
             .HasMaxLength(255)
