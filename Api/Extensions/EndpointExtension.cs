@@ -52,21 +52,9 @@ public static class EndpointExtension
     /// Requires that the caller have access.
     /// </summary>
     /// <param name="builder">The endpoint convention builder.</param>
+    /// /// <param name="roles">The required roles for the endpoint.</param>
     /// <returns>The original convention builder parameter.</returns>
-    public static TBuilder RequireTaskManagerAuthorization<TBuilder>(this TBuilder builder)
-        where TBuilder : IEndpointConventionBuilder
-    {
-        builder.AddEndpointFilter(new TaskManagerAuthorizeFilter());
-        return builder;
-    }
-    
-    /// <summary>
-    /// Requires that the caller have access to the specified roles.
-    /// </summary>
-    /// <param name="builder">The endpoint convention builder.</param>
-    /// <param name="roles">The required roles for the endpoint.</param>
-    /// <returns>The original convention builder parameter.</returns>
-    public static TBuilder RequireRoles<TBuilder>(this TBuilder builder, params UserRole[] roles)
+    public static TBuilder RequireTaskManagerAuthorization<TBuilder>(this TBuilder builder, params UserRole[] roles)
         where TBuilder : IEndpointConventionBuilder
     {
         builder.AddEndpointFilter(new TaskManagerAuthorizeFilter(roles));

@@ -15,6 +15,12 @@ public class UnitOfWork(TaskManagerDbContext context) : IUnitOfWork
     private ITaskRepository? _taskRepository;
     public ITaskRepository TaskRepository => _taskRepository ??= new TaskRepository(context);
     
+    private ITaskCommentRepository? _taskCommentRepository;
+    public ITaskCommentRepository TaskCommentRepository => _taskCommentRepository ??= new TaskCommentRepository(context);
+    
+    private ITaskHistoryRepository? _taskHistoryRepository;
+    public ITaskHistoryRepository TaskHistoryRepository => _taskHistoryRepository ??= new TaskHistoryRepository(context);
+    
     public void BeginTransaction()
     {
         context.Database.BeginTransaction();

@@ -6,4 +6,13 @@ namespace Infrastructure.Repositories;
 
 public class TaskRepository(DbContext context) : Repository<TaskEntity>(context), ITaskRepository
 {
+    public async Task<IEnumerable<TaskEntity>> GetTasksByProjectIdAsync(int projectId)
+    {
+        return await DbSet.Where(x => x.ProjectId == projectId).ToListAsync();
+    }
+
+    public async Task<int> GetCountTasksByProjectIdAsync(int projectId)
+    {
+        return await DbSet.Where(x => x.ProjectId == projectId).CountAsync();
+    }
 }

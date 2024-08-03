@@ -45,25 +45,24 @@ public class TaskManagerDbContext(DbContextOptions<TaskManagerDbContext> options
 
         foreach (var entry in modifiedEntries)
         {
-            var entity = entry.Entity;
             var now = DateTimeHelper.UtcNow();
 
             if (entry.State == EntityState.Added)
             {
-                entity.CreatedAt = now;
+                entry.Entity.CreatedAt = now;
             }
             else
             {
-                Entry(entity).Property(x => x.CreatedAt).IsModified = false;
+                entry.Property(x => x.CreatedAt).IsModified = false;
             }
 
             if (entry.State == EntityState.Modified)
             {
-                entity.UpdatedAt = now;
+                entry.Entity.UpdatedAt = now;
             }
             else
             {
-                Entry(entity).Property(x => x.UpdatedAt).IsModified = false;
+                entry.Property(x => x.UpdatedAt).IsModified = false;
             }
         }
     }

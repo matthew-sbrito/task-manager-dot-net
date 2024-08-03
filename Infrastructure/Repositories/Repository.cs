@@ -1,6 +1,7 @@
 using Common.Helpers;
 using Domain.Entities;
 using Domain.Interfaces;
+using Infrastructure.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
@@ -9,9 +10,13 @@ public abstract class Repository<TEntity>(DbContext context) : IRepository<TEnti
 {
     protected DbSet<TEntity> DbSet => context.Set<TEntity>();
 
-    public async Task<TEntity?> GetByIdAsync(int id)
+    public async Task<TEntity?> GetByIdAsync(int id, IEnumerable<string>? includes = null)
     {
-        return await DbSet.FirstOrDefaultAsync(x => x.Id == id);
+        includes ??= [];
+
+        return await DbSet
+            .ApplyIncludes(includes)
+            .FirstOrDefaultAsync(x => x.Id == id);
     }
 
     public async Task<IEnumerable<TEntity>> GetAll()

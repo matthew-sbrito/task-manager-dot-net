@@ -7,6 +7,7 @@ namespace Application.Interfaces;
 public interface IProjectService : IServiceBase
 {
     Task<Response<IEnumerable<ProjectResponseDto>>> GetProjectsAsync();
-    Task<Response<ProjectResponseDto>> CreateProject(CreateProjectDto body);
-    Task<Response<ProjectResponseDto>> UpdateProject(int projectId, UpdateProjectDto body);
+    Task<Response<ProjectResponseDto>> CreateProjectAsync(CreateProjectDto body);
+    Task<Response<ProjectResponseDto>> UpdateProjectAsync(int projectId, UpdateProjectDto body);
+    Task<Response<bool>> DeleteProjectAsync(int projectId);
 }

@@ -1,8 +1,7 @@
 namespace Application.DTOs.Response;
 
-public class ProjectResponseDto
+public class ProjectResponseDto : AuditableResponseDto
 {
-    public int Id { get; set; }
     public string Title { get; set; } = null!;
     public string Description { get; set; } = null!;
 }

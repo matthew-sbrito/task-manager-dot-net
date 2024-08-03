@@ -1,6 +1,6 @@
 namespace Domain.Entities;
 
-public class CommentEntity : AuditableEntity
+public class TaskCommentEntity : AuditableEntity
 {
     public string Content { get; set; } = null!;
 }

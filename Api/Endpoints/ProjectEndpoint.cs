@@ -11,33 +11,35 @@ public class ProjectEndpoint : IEndpoint
 {
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
-        var group = app.MapGroup("/project")
+        var group = app.MapGroup("/projects")
             .WithTags(EndpointConstants.Tags.Project)
             .RequireTaskManagerAuthorization();
 
         group.MapGet("", GetProjectsAsync)
-            .Produces<ProjectResponseDto>(StatusCodes.Status201Created)
+            .Produces<IEnumerable<ProjectResponseDto>>()
             .Produces<ErrorResponse>(StatusCodes.Status400BadRequest);
-        
+
         group.MapPost("", CreateProjectAsync)
             .Produces<ProjectResponseDto>(StatusCodes.Status201Created)
             .Produces<ErrorResponse>(StatusCodes.Status400BadRequest);
     }
-    
-    private static async Task<IResult> GetProjectsAsync(IProjectService projectService)
+
+    private static async Task<IResult> GetProjectsAsync(
+        [FromServices] IProjectService projectService
+    )
     {
         var response = await projectService.GetProjectsAsync();
         return response.ToHttpResponse();
     }
 
     private static async Task<IResult> CreateProjectAsync(
-        IProjectService projectService,
+        [FromServices] IProjectService projectService,
         [FromBody] CreateProjectDto requestBody
     )
     {
-        var response = await projectService.CreateProject(requestBody);
+        var response = await projectService.CreateProjectAsync(requestBody);
 
         return response
-            .ToCreatedResponse(result => $"/project/{result.Id}");
+            .ToCreatedResponse(result => $"/projects/{result.Id}");
     }
 }

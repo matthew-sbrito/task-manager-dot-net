@@ -14,6 +14,11 @@ namespace Application.Extensions;
 
 public static class ServiceCollectionExtension
 {
+    /// <summary>
+    /// Map DTOs and Entities in Mapper to using as service
+    /// </summary>
+    /// <param name="services">The <see cref="IServiceCollection"/> instance.</param>
+    /// <returns>The <see cref="IServiceCollection"/> instance.</returns>
     public static IServiceCollection MapAutoMapper(this IServiceCollection services)
     {
         return services.AddSingleton(CreateMapper());
@@ -25,6 +30,7 @@ public static class ServiceCollectionExtension
         {
             configure.AddProfile(new ProjectProfile());
             configure.AddProfile(new TaskProfile());
+            configure.AddProfile(new TaskCommentProfile());
         });
 
         return mapperConfiguration.CreateMapper();
@@ -81,8 +87,9 @@ public static class ServiceCollectionExtension
         services
             .AddTransient<IUnitOfWork, UnitOfWork>()
             .AddScoped<IProjectService, ProjectService>()
-            .AddScoped<ITaskService, TaskService>();
-
+            .AddScoped<ITaskService, TaskService>()
+            .AddScoped<ITaskHistoryService, TaskHistoryService>();
+        
         return services;
     }
     
