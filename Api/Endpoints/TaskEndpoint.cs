@@ -11,53 +11,21 @@ public class TaskEndpoint : IEndpoint
 {
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
-        var group = app.MapGroup("/projects/{projectId:int}/tasks")
+        var group = app.MapGroup("/tasks/{taskId:int}")
             .WithTags(EndpointConstants.Tags.Task)
             .RequireTaskManagerAuthorization();
 
-        group.MapGet("", GetTasksAsync)
-            .Produces<IEnumerable<TaskResponseDto>>()
-            .Produces<ErrorResponse>(StatusCodes.Status400BadRequest);
-
-        group.MapPost("", CreateTaskAsync)
-            .Produces<TaskResponseDto>(StatusCodes.Status201Created)
-            .Produces<ErrorResponse>(StatusCodes.Status400BadRequest);
-
-        group.MapPut("/{taskId:int}", UpdateTaskAsync)
+        group.MapPut("", UpdateTaskAsync)
             .Produces<TaskResponseDto>()
             .Produces<ErrorResponse>(StatusCodes.Status400BadRequest);
-
-        group.MapPost("/{taskId:int}/comment", CreateCommentTaskAsync)
-            .Produces<TaskCommentResponseDto>()
-            .Produces<ErrorResponse>(StatusCodes.Status400BadRequest);
         
-        group.MapDelete("/{taskId:int}", DeleteTaskAsync)
+        group.MapDelete("", DeleteTaskAsync)
             .Produces(StatusCodes.Status204NoContent)
             .Produces<ErrorResponse>(StatusCodes.Status400BadRequest);
-    }
-
-    private static async Task<IResult> GetTasksAsync(
-        [FromRoute] int projectId,
-        [FromServices] ITaskService taskService
-    )
-    {
-        var response = await taskService
-            .GetTasksByProjectIdAsync(projectId);
-
-        return response.ToHttpResponse();
-    }
-
-    private static async Task<IResult> CreateTaskAsync(
-        [FromRoute] int projectId,
-        [FromBody] CreateTaskDto requestBody,
-        [FromServices] ITaskService taskService
-    )
-    {
-        var response = await taskService
-            .CreateTaskAsync(projectId, requestBody);
-
-        return response
-            .ToCreatedResponse(result => $"/projects/{result.ProjectId}/{result.Id}");
+        
+        group.MapPost("/comment", CreateCommentTaskAsync)
+            .Produces<TaskCommentResponseDto>()
+            .Produces<ErrorResponse>(StatusCodes.Status400BadRequest);
     }
 
     private static async Task<IResult> UpdateTaskAsync(

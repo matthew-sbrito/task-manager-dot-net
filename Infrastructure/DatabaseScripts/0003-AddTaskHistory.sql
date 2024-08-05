@@ -1,11 +1,6 @@
 create table if not exists public.tasks_history
 (
     id                 serial primary key                        not null,
-    title              varchar(55),
-    description        varchar(255),
-    status             int,
-    priority           int,
-    due_date           timestamp without time zone,
     details            text,
     task_id            int                                       not null
         constraint tasks_projects_id_fkey

@@ -6,13 +6,16 @@ using AutoMapper;
 using Common.Enums;
 using Domain.Entities;
 using Domain.ORM;
+using FluentValidation;
 using Microsoft.AspNetCore.Http;
+using Application.Extensions;
 
 namespace Application.Services;
 
 public class ProjectService(
     IMapper mapper,
     IUnitOfWork unitOfWork,
+    IValidator<ProjectRequestDto> createProjectValidator,
     IServiceProvider serviceProvider
 ) : ServiceBase(serviceProvider), IProjectService
 {
@@ -26,10 +29,15 @@ public class ProjectService(
         return ResponseService.Success(response);
     }
 
-    public async Task<Response<ProjectResponseDto>> CreateProjectAsync(CreateProjectDto body)
+    public async Task<Response<ProjectResponseDto>> CreateProjectAsync(ProjectRequestDto body)
     {
         var userId = GetAuthenticatedUserId();
 
+        var validationResult = await createProjectValidator.ValidateAsync(body);
+
+        if (!validationResult.IsValid)
+            return ResponseService.Error<ProjectResponseDto>(validationResult.GetErrorsMessage());
+        
         var projectEntity = mapper.Map<ProjectEntity>(body);
         projectEntity.CreatedByUserId = userId;
 
@@ -40,7 +48,7 @@ public class ProjectService(
         return ResponseService.Success(response, StatusCodes.Status201Created);
     }
 
-    public async Task<Response<ProjectResponseDto>> UpdateProjectAsync(int projectId, UpdateProjectDto body)
+    public async Task<Response<ProjectResponseDto>> UpdateProjectAsync(int projectId, ProjectRequestDto body)
     {
         var projectEntity = await unitOfWork.ProjectRepository.GetByIdAsync(projectId);
 

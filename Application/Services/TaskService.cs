@@ -1,11 +1,13 @@
 using Application.DTOs.Common;
 using Application.DTOs.Request;
 using Application.DTOs.Response;
+using Application.Extensions;
 using Application.Interfaces;
 using AutoMapper;
 using Common.Enums;
 using Domain.Entities;
 using Domain.ORM;
+using FluentValidation;
 using Microsoft.AspNetCore.Http;
 
 namespace Application.Services;
@@ -14,11 +16,10 @@ public class TaskService(
     IMapper mapper,
     IUnitOfWork unitOfWork,
     ITaskHistoryService taskHistoryService,
+    IValidator<CreateTaskDto> createTaskValidator,
     IServiceProvider serviceProvider
 ) : ServiceBase(serviceProvider), ITaskService
 {
-    private const int MaxTaskPerProject = 20;
-
     public async Task<Response<IEnumerable<TaskResponseDto>>> GetTasksByProjectIdAsync(int projectId)
     {
         var tasks = await unitOfWork.TaskRepository
@@ -33,12 +34,10 @@ public class TaskService(
     {
         var userId = GetAuthenticatedUserId();
 
-        var taskCountInProject = await unitOfWork.TaskRepository
-            .GetCountTasksByProjectIdAsync(projectId);
-
-        if (taskCountInProject > (MaxTaskPerProject - 1))
-            return ResponseService
-                .Error<TaskResponseDto>($"The number max of task for a project is {MaxTaskPerProject}.");
+        var validationResult = await createTaskValidator.ValidateAsync(body);
+        
+        if (!validationResult.IsValid)
+            return ResponseService.Error<TaskResponseDto>(validationResult.GetErrorsMessage());
 
         var taskEntity = mapper.Map<TaskEntity>(body);
 

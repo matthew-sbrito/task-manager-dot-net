@@ -31,18 +31,23 @@ public class TaskEntityConfiguration : IEntityTypeConfiguration<TaskEntity>
             .HasColumnName("priority")
             .IsRequired();
         
-        builder.Property(e => e.ProjectId)
-            .HasColumnName("project_id")
-            .IsRequired();
-        
         builder.Property(e => e.DueDate)
             .HasColumnName("due_date")
             .HasColumnType("timestamp without time zone")
+            .IsRequired();
+        
+        builder.Property(e => e.ProjectId)
+            .HasColumnName("project_id")
             .IsRequired();
 
         builder.HasOne(e => e.Project)
             .WithMany(p => p.Tasks)
             .HasForeignKey(e => e.ProjectId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        builder.HasMany(e => e.Comments)
+            .WithOne(t => t.Task)
+            .HasForeignKey(t => t.TaskId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

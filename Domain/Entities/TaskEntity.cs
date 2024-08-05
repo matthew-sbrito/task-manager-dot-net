@@ -11,4 +11,6 @@ public class TaskEntity : AuditableEntity
     public DateTime DueDate { get; set; }
     public int ProjectId { get; set; }
     public ProjectEntity Project { get; set; } = null!;
+    public ICollection<TaskCommentEntity> Comments = [];
+    public ICollection<TaskHistoryEntity> Histories = [];
 }

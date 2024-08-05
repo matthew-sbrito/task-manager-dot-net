@@ -1,6 +1,6 @@
 namespace Application.DTOs.Request;
 
-public class UpdateProjectDto
+public class ProjectRequestDto
 {
     public string Title { get; set; } = null!;
     public string Description { get; set; } = null!;
