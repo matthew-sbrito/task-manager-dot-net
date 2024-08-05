@@ -4,6 +4,7 @@ using Asp.Versioning;
 using Api.Extensions;
 using Api.Filters;
 using Api.Middlewares;
+using Infrastructure.Configurations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,12 +37,16 @@ builder.Services
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
+// Execute migration only is not testing
+if (!builder.Environment.IsEnvironment("Testing"))
+    DatabaseConfiguration.ExecuteMigrations(connectionString);
+
 // Add app services to the container.
 builder.Services
     .AddAutoMapper(typeof(Program))
     .MapAutoMapper()
-    .ExecuteDbUpMigrations(connectionString)
     .AddDatabase(connectionString)
+    .AddValidators()
     .AddServices()
     .AddInitializers()
     .AddTransient<HandleExceptionMiddleware>()
@@ -71,6 +76,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-await app.RunInitializers();
+// await app.RunInitializers();
 
 app.Run();

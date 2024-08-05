@@ -8,6 +8,8 @@ public static class EntityTypeBuilderExtension
 {
     public static void SetAuditableConfiguration<TEntity>(this EntityTypeBuilder<TEntity> builder) where TEntity : AuditableEntity
     {
+        builder.HasQueryFilter(x => x.DeletedAt == null);
+
         builder
             .Property(e => e.Id)
             .HasColumnName("id")

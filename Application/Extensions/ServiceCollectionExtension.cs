@@ -9,6 +9,8 @@ using Infrastructure;
 using AutoMapper;
 using Domain.ORM;
 using DbUp;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 
 namespace Application.Extensions;
 
@@ -37,31 +39,6 @@ public static class ServiceCollectionExtension
     }
     
     /// <summary>
-    /// Execute migration using DbUp library.
-    /// </summary>
-    /// <param name="services">The <see cref="IServiceCollection"/> instance.</param>
-    /// <param name="connectionString">The connection string of current database.</param>
-    /// <returns>The <see cref="IServiceCollection"/> instance.</returns>
-    public static IServiceCollection ExecuteDbUpMigrations(this IServiceCollection services, string connectionString)
-    {
-        var scriptPath = Path.GetFullPath(@"..\Infrastructure\DatabaseScripts");
-        
-        var upgradeEngine = DeployChanges.To
-            .PostgresqlDatabase(connectionString)
-            .WithScriptsFromFileSystem(scriptPath)
-            .JournalToPostgresqlTable("public", "schemaversions")
-            .LogToConsole()
-            .Build();
-
-        var result = upgradeEngine.PerformUpgrade();
-
-        if (!result.Successful)
-            throw new ApplicationException("Database migration failed", result.Error);
-
-        return services;
-    }
-    
-    /// <summary>
     /// Add database to app container.
     /// </summary>
     /// <param name="services">The <see cref="IServiceCollection"/> instance.</param>
@@ -69,14 +46,26 @@ public static class ServiceCollectionExtension
     /// <returns>The <see cref="IServiceCollection"/> instance.</returns>
     public static IServiceCollection AddDatabase(this IServiceCollection services, string connectionString)
     {
-        services.AddDbContext<TaskManagerDbContext>(options =>
-        {
-            options.UseNpgsql(connectionString);
-        });
+        services.AddDbContext<TaskManagerDbContext>(options => { options.UseNpgsql(connectionString); });
 
         return services;
     }
-    
+
+    /// <summary>
+    /// Add validators to app container.
+    /// </summary>
+    /// <param name="services">The <see cref="IServiceCollection"/> instance.</param>
+    /// <returns>The <see cref="IServiceCollection"/> instance.</returns>
+    public static IServiceCollection AddValidators(this IServiceCollection services)
+    {
+        services
+            .AddFluentValidationAutoValidation()
+            .AddFluentValidationClientsideAdapters()
+            .AddValidatorsFromAssembly(typeof(IServiceBase).Assembly);
+
+        return services;
+    }
+
     /// <summary>
     /// Add services to app container.
     /// </summary>
@@ -86,13 +75,13 @@ public static class ServiceCollectionExtension
     {
         services
             .AddTransient<IUnitOfWork, UnitOfWork>()
-            .AddScoped<IProjectService, ProjectService>()
+            .AddScoped<IProjectService, CreateProjectService>()
             .AddScoped<ITaskService, TaskService>()
             .AddScoped<ITaskHistoryService, TaskHistoryService>();
-        
+
         return services;
     }
-    
+
     /// <summary>
     /// Add initializers to app container.
     /// </summary>
@@ -101,7 +90,7 @@ public static class ServiceCollectionExtension
     public static IServiceCollection AddInitializers(this IServiceCollection services)
     {
         var assembly = typeof(IAppInitializer).Assembly;
-        
+
         var endpointServiceDescriptors = assembly
             .DefinedTypes
             .Where(type => type is { IsAbstract: false, IsInterface: false } &&

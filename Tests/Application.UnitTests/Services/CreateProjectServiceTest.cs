@@ -1,75 +1,57 @@
 using Microsoft.AspNetCore.Http;
-using Application.DTOs.Request;
 using Application.DTOs.Response;
 using Application.Interfaces;
 using Application.Validators;
 using Application.Services;
-using Common.Helpers;
 using Domain.Entities;
 using Domain.Interfaces;
 using Moq;
+using Tests.Common.Factory;
 
 namespace Tests.Application.UnitTests.Services;
 
-public class ProjectServiceTest : ServiceBaseTest
+public class CreateProjectServiceTest : ServiceBaseTest
 {
     private readonly IProjectService _projectService;
 
-    public ProjectServiceTest()
+    public CreateProjectServiceTest()
     {
         var projectRepositoryMapper = new Mock<IProjectRepository>();
         var projectValidator = new ProjectRequestValidator();
 
-        UnitOfWorkMock
+        MockUnitOfWork
             .Setup(x => x.ProjectRepository)
             .Returns(projectRepositoryMapper.Object);
 
-        _projectService = new ProjectService(
-            MapperMock.Object,
-            UnitOfWorkMock.Object,
+        _projectService = new CreateProjectService(
+            MockMapper.Object,
+            MockUnitOfWork.Object,
             projectValidator,
-            ServiceProviderMock.Object
+            MockServiceProvider.Object
         );
     }
 
     [Fact]
     public async Task IsValid_ShouldRegisterNew_WhenFieldsGreaterThan5()
     {
-        var request = new ProjectRequestDto
-        {
-            Title = "Greater than 5",
-            Description = "Greater than 5"
-        };
-        
-        var entity = new ProjectEntity
-        {
-            Id = 1,
-            Title = "Greater than 5",
-            Description = "Greater than 5",
-            CreatedAt = DateTimeHelper.UtcNow(),
-            CreatedByUserId = 1
-        };
-        
-        var response = new ProjectResponseDto
-        {
-            Id = 1,
-            Title = "Greater than 5",
-            Description = "Greater than 5",
-            CreatedAt = DateTimeHelper.UtcNow(),
-            CreatedByUserId = 1
-        };
+        // Arrange
+        var request = ProjectFactory.CreateValidPayload();
+        var entity = ProjectFactory.ToEntity(request);
+        var response = ProjectFactory.ToResponse(entity);
 
-        MapperMock
+        MockMapper
             .Setup(x => x.Map<ProjectEntity>(request))
             .Returns(entity);
         
-        MapperMock
+        MockMapper
             .Setup(x => x.Map<ProjectResponseDto>(entity))
             .Returns(response);
             
+        // Act
         var result = await _projectService
             .CreateProjectAsync(request);
 
+        // Assert
         Assert.True(result.Succeeded);
         Assert.NotNull(result.Data);
         Assert.Null(result.Message);
@@ -79,17 +61,15 @@ public class ProjectServiceTest : ServiceBaseTest
     [Fact]
     public async Task IsInvalid_ShouldNotRegisterNew_WhenFieldsLessThan5Chars()
     {
-        var request = new ProjectRequestDto
-        {
-            Title = "Less",
-            Description = "Less"
-        };
-        
-        var result = await _projectService
-            .CreateProjectAsync(request);
-
+        // Arrange
+        var request = ProjectFactory.CreateInvalidPayload();
         const string expectedMessage = "The field title must have minimum 5 char.\nThe field description must have minimum 5 char.";
 
+        // Act
+        var result = await _projectService
+            .CreateProjectAsync(request);
+        
+        // Assert
         Assert.False(result.Succeeded);
         Assert.Null(result.Data);
         Assert.Equal(expectedMessage, result.Message);

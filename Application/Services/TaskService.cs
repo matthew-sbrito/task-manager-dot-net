@@ -35,7 +35,7 @@ public class TaskService(
         var userId = GetAuthenticatedUserId();
 
         var validationResult = await createTaskValidator.ValidateAsync(body);
-        
+
         if (!validationResult.IsValid)
             return ResponseService.Error<TaskResponseDto>(validationResult.GetErrorsMessage());
 
@@ -53,7 +53,7 @@ public class TaskService(
         return ResponseService.Success(response, StatusCodes.Status201Created);
     }
 
-    public async Task<Response<TaskResponseDto>> UpdateTaskAsync(int projectId, int taskId, UpdateTaskDto body)
+    public async Task<Response<TaskResponseDto>> UpdateTaskAsync(int taskId, UpdateTaskDto body)
     {
         var user = await GetAuthenticatedUser();
         var task = await unitOfWork.TaskRepository.GetByIdAsync(taskId);
@@ -89,8 +89,7 @@ public class TaskService(
         }
     }
 
-    public async Task<Response<TaskCommentResponseDto>> CreateCommentAsync(int projectId, int taskId,
-        CreateTaskCommentDto body)
+    public async Task<Response<TaskCommentResponseDto>> CreateCommentAsync(int taskId, CreateTaskCommentDto body)
     {
         var user = await GetAuthenticatedUser();
         var task = await unitOfWork.TaskRepository.GetByIdAsync(taskId);
@@ -126,7 +125,7 @@ public class TaskService(
         }
     }
 
-    public async Task<Response<bool>> RemoveTaskAsync(int projectId, int taskId)
+    public async Task<Response<bool>> RemoveTaskAsync(int taskId)
     {
         var taskEntity = await unitOfWork.TaskRepository.GetByIdAsync(taskId);
 

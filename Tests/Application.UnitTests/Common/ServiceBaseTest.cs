@@ -11,14 +11,14 @@ namespace Tests.Application.UnitTests.Services;
 
 public abstract class ServiceBaseTest
 {
-    protected readonly Mock<IMapper> MapperMock;
-    protected readonly Mock<IUnitOfWork> UnitOfWorkMock;
-    protected readonly Mock<IServiceProvider> ServiceProviderMock;
+    protected readonly Mock<IMapper> MockMapper;
+    protected readonly Mock<IUnitOfWork> MockUnitOfWork;
+    protected readonly Mock<IServiceProvider> MockServiceProvider;
 
     protected ServiceBaseTest()
     {
-        MapperMock = new Mock<IMapper>();
-        UnitOfWorkMock = new Mock<IUnitOfWork>();
+        MockMapper = new Mock<IMapper>();
+        MockUnitOfWork = new Mock<IUnitOfWork>();
         
         var headers = new HeaderDictionary();
         headers.Append("x-user-id", "1");
@@ -33,8 +33,8 @@ public abstract class ServiceBaseTest
             .Setup(x => x.HttpContext)
             .Returns(httpContextMock.Object);
         
-        ServiceProviderMock = new Mock<IServiceProvider>();
-        ServiceProviderMock
+        MockServiceProvider = new Mock<IServiceProvider>();
+        MockServiceProvider
             .Setup(x => x.GetService(typeof(IHttpContextAccessor)))
             .Returns(httpContextAccessorMock.Object);
     }

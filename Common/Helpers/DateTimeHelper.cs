@@ -4,7 +4,7 @@ public static class DateTimeHelper
 {
     public static DateTime UtcNow()
     {
-        return DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc);
+        return DateTimeOffset.Now.DateTime;
     }
 
     public static long Timestamp()

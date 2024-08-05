@@ -12,7 +12,7 @@ using Application.Extensions;
 
 namespace Application.Services;
 
-public class ProjectService(
+public class CreateProjectService(
     IMapper mapper,
     IUnitOfWork unitOfWork,
     IValidator<ProjectRequestDto> createProjectValidator,

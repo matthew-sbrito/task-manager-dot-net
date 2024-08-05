@@ -28,40 +28,37 @@ public class TaskEndpoint : IEndpoint
             .Produces<ErrorResponse>(StatusCodes.Status400BadRequest);
     }
 
-    private static async Task<IResult> UpdateTaskAsync(
-        [FromRoute] int projectId,
+    private static async Task<IResult> UpdateTaskAsync(        
         [FromRoute] int taskId,
         [FromBody] UpdateTaskDto requestBody,
         [FromServices] ITaskService taskService
     )
     {
         var response = await taskService
-            .UpdateTaskAsync(projectId, taskId, requestBody);
+            .UpdateTaskAsync(taskId, requestBody);
 
         return response.ToHttpResponse();
     }
 
-    private static async Task<IResult> CreateCommentTaskAsync(
-        [FromRoute] int projectId,
+    private static async Task<IResult> CreateCommentTaskAsync(        
         [FromRoute] int taskId,
         [FromBody] CreateTaskCommentDto requestBody,
         [FromServices] ITaskService taskService
     )
     {
         var response = await taskService
-            .CreateCommentAsync(projectId, taskId, requestBody);
+            .CreateCommentAsync(taskId, requestBody);
 
         return response.ToHttpResponse();
     }
 
     private static async Task<IResult> DeleteTaskAsync(
-        [FromRoute] int projectId,
         [FromRoute] int taskId,
         [FromServices] ITaskService taskService
     )
     {
         var response = await taskService
-            .RemoveTaskAsync(projectId, taskId);
+            .RemoveTaskAsync(taskId);
 
         return response.ToHttpResponse();
     }

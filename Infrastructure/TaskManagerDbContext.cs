@@ -10,7 +10,9 @@ public class TaskManagerDbContext(DbContextOptions<TaskManagerDbContext> options
     public virtual DbSet<UserEntity> Users { get; set; } = null!;
     public virtual DbSet<ProjectEntity> Projects { get; set; } = null!;
     public virtual DbSet<TaskEntity> Tasks { get; set; } = null!;
-    
+    public virtual DbSet<TaskCommentEntity> TaskComments { get; set; } = null!;
+    public virtual DbSet<TaskHistoryEntity> TaskHistories { get; set; } = null!;
+
     public override int SaveChanges()
     {
         UpdateAuditableEntities();
@@ -27,13 +29,12 @@ public class TaskManagerDbContext(DbContextOptions<TaskManagerDbContext> options
     {
         modelBuilder.HasDefaultSchema("public");
 
-        modelBuilder.Entity<AuditableEntity>()
-            .HasQueryFilter(x => x.DeletedAt == null);
-
         modelBuilder.ApplyConfiguration(new UserEntityConfiguration());
         modelBuilder.ApplyConfiguration(new ProjectEntityConfiguration());
         modelBuilder.ApplyConfiguration(new TaskEntityConfiguration());
-        
+        modelBuilder.ApplyConfiguration(new TaskCommentEntityConfiguration());
+        modelBuilder.ApplyConfiguration(new TaskHistoryEntityConfiguration());
+
         base.OnModelCreating(modelBuilder);
     }
 
