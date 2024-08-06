@@ -1,0 +1,35 @@
+<Project>
+    <PropertyGroup>
+        <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    </PropertyGroup>
+    <ItemGroup>
+        <!-- ASP.NET -->
+        <PackageVersion Include="Asp.Versioning.Http" Version="8.1.0"/>
+        <PackageVersion Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.1.0"/>
+        <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="8.0.1"/>
+        <PackageVersion Include="Swashbuckle.AspNetCore" Version="6.5.0"/>
+        <PackageVersion Include="Swashbuckle.AspNetCore.Filters" Version="8.0.0"/>
+        <PackageVersion Include="Swashbuckle.AspNetCore.Swagger" Version="6.5.0"/>
+        <PackageVersion Include="Swashbuckle.AspNetCore.SwaggerUI" Version="6.5.0"/>
+        <!-- Entity Framework -->
+        <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="8.0.1" />
+        <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.1" />
+        <PackageVersion Include="Microsoft.EntityFrameworkCore.Proxies" Version="8.0.1" />
+        <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.1" />
+        <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.1" />
+        <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.0" />
+        <PackageVersion Include="dbup-postgresql" Version="5.0.40"/>
+        <!-- Other packages -->
+        <PackageVersion Include="AutoMapper" Version="13.0.1"/>
+        <PackageVersion Include="FluentValidation.AspNetCore" Version="11.3.0"/>
+        <!-- Tests-->
+        <PackageVersion Include="Bogus" Version="35.6.0" />
+        <PackageVersion Include="FluentAssertions" Version="6.12.0" />
+        <PackageVersion Include="Meziantou.Extensions.Logging.Xunit" Version="1.0.7" />
+        <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.7" />
+        <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
+        <PackageVersion Include="Moq" Version="4.20.70" />
+        <PackageVersion Include="Testcontainers.PostgreSql" Version="3.9.0" />
+        <PackageVersion Include="xunit" Version="2.9.0" />
+    </ItemGroup>
+</Project>

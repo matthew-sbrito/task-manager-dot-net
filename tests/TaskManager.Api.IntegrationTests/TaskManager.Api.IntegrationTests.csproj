@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>        
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="FluentAssertions"  />
+        <PackageReference Include="Meziantou.Extensions.Logging.Xunit"  />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing"  />
+        <PackageReference Include="Microsoft.NET.Test.Sdk"  />
+        <PackageReference Include="Testcontainers.PostgreSql"  />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\src\TaskManager.Api\TaskManager.Api.csproj" />
+        <ProjectReference Include="..\TaskManager.TestCommon\TaskManager.TestCommon.csproj" />
+    </ItemGroup>
+
+</Project>
