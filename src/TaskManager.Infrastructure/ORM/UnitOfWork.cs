@@ -21,6 +21,11 @@ public class UnitOfWork(TaskManagerDbContext context) : IUnitOfWork
     private ITaskHistoryRepository? _taskHistoryRepository;
     public ITaskHistoryRepository TaskHistoryRepository => _taskHistoryRepository ??= new TaskHistoryRepository(context);
     
+    public async Task SaveAsync()
+    {
+        await context.SaveChangesAsync();
+    }
+    
     public void BeginTransaction()
     {
         context.Database.BeginTransaction();
@@ -31,19 +36,9 @@ public class UnitOfWork(TaskManagerDbContext context) : IUnitOfWork
         await context.Database.BeginTransactionAsync();
     }
 
-    public void Commit()
-    {
-        context.Database.CommitTransaction();
-    }
-
     public async Task CommitAsync()
     {
         await context.Database.CommitTransactionAsync();
-    }
-    
-    public void Rollback()
-    {
-        context.Database.RollbackTransaction();
     }
     
     public async Task RollbackAsync()

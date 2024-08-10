@@ -4,21 +4,26 @@ using Xunit.Abstractions;
 namespace TaskManager.Api.IntegrationTests.Common;
 
 [Collection(nameof(IntegrationTestFactoryCollection))]
-public abstract class IntegrationBaseTest 
+public abstract class IntegrationBaseTest(
+    IntegrationTestFactory factory,
+    ITestOutputHelper testOutputHelper
+) : IAsyncLifetime
 {
-    protected readonly HttpClient HttpClient;
+    protected HttpClient HttpClient = null!;
 
-    protected IntegrationBaseTest(
-        IntegrationTestFactory factory,
-        ITestOutputHelper testOutputHelper
-    )
+    public async Task InitializeAsync()
     {
         factory.WithTestLogging(testOutputHelper);
-        factory.Respawn();
+        await factory.UpDatabase();
         
         HttpClient = factory.CreateClient();
     }
-    
+
+    public async Task DisposeAsync()
+    {
+        await factory.DownDatabase();
+    }
+
     protected void SetManagerOnHeader()
     {
         SetHeader("x-user-id", "1");

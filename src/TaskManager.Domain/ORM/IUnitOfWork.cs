@@ -9,10 +9,8 @@ public interface IUnitOfWork : IDisposable, IAsyncDisposable
     ITaskRepository TaskRepository { get; }
     ITaskCommentRepository TaskCommentRepository { get; }
     ITaskHistoryRepository TaskHistoryRepository { get; }
-    void BeginTransaction();
+    Task SaveAsync();
     Task BeginTransactionAsync();
-    void Commit();
     Task CommitAsync();
-    void Rollback();
     Task RollbackAsync();
 }

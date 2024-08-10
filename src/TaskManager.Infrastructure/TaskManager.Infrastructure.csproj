@@ -8,17 +8,22 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.EntityFrameworkCore"/>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Design"/>        
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Relational"/>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL"/>
         <PackageReference Include="dbup-postgresql"/>
     </ItemGroup>
-    
-    <ItemGroup>
-        <ProjectReference Include="..\TaskManager.Shared\TaskManager.Shared.csproj" />
-        <ProjectReference Include="..\TaskManager.Domain\TaskManager.Domain.csproj" />
+
+    <ItemGroup>        
+        <ProjectReference Include="..\TaskManager.Application\TaskManager.Application.csproj"/>
     </ItemGroup>
 
     <ItemGroup>

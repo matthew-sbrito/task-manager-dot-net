@@ -4,10 +4,11 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using TaskManager.Application.Extensions;
-using TaskManager.Application.Interfaces;
+using TaskManager.Application.Common.Extensions;
+using TaskManager.Application.Common.Interfaces;
 using TaskManager.Infrastructure;
 using TaskManager.Infrastructure.Configurations;
+using TaskManager.Infrastructure.Extensions;
 using Testcontainers.PostgreSql;
 
 namespace TaskManager.Api.IntegrationTests.Common.IntegrationApplicationFactory;
@@ -27,13 +28,17 @@ public class IntegrationTestFactory
         var connectionString = _dbContainer.GetConnectionString();
 
         builder.UseEnvironment("Testing");
+        builder.ConfigureAppConfiguration(configure =>
+        {
+            configure.Properties.Add("DefaultConnection", connectionString);
+        });
 
         builder.ConfigureTestServices(services =>
         {
             services.RemoveAll<DbContextOptions<TaskManagerDbContext>>();
             services.RemoveAll<TaskManagerDbContext>();
 
-            DatabaseConfiguration.ExecuteMigrations(connectionString);
+            DatabaseMigrationHelper.ExecuteMigrations(connectionString);
             services.AddDatabase(connectionString);
         });
     }
@@ -48,18 +53,24 @@ public class IntegrationTestFactory
         return _dbContainer.StopAsync();
     }
 
-    public void Respawn()
+    public async Task UpDatabase()
     {
         var connectionString = _dbContainer.GetConnectionString();
-        
-        DatabaseConfiguration.CleanDatabase(connectionString);
-        DatabaseConfiguration.ExecuteMigrations(connectionString);
+        DatabaseMigrationHelper.ExecuteMigrations(connectionString);
         
         using var scope = Services.CreateScope();
         
         var appInitializers = scope.ServiceProvider.GetRequiredService<IEnumerable<IAppInitializer>>();
         
         foreach (var initializer in appInitializers)
-            initializer.InitializeAsync().Wait();
+            await initializer.InitializeAsync();
+    }
+    
+    public Task DownDatabase()
+    {
+        var connectionString = _dbContainer.GetConnectionString();
+        DatabaseMigrationHelper.CleanDatabase(connectionString);
+        
+        return Task.CompletedTask;
     }
 }

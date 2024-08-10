@@ -10,7 +10,6 @@ public interface IRepository<TEntity> where TEntity : AuditableEntity
     Task AddRangeAsync(IEnumerable<TEntity> entities);
     Task UpdateAsync(TEntity entity);
     Task UpdateRangeAsync(IEnumerable<TEntity> entities);
-    Task DeleteAsync(TEntity entity);
-    Task DeleteRangeAsync(IEnumerable<TEntity> entities);
-    Task SaveAsync();
+    Task DeleteAsync(TEntity entity, int? deletedByUserId = null);
+    Task DeleteRangeAsync(IEnumerable<TEntity> entities, int? deletedByUserId = null);
 }

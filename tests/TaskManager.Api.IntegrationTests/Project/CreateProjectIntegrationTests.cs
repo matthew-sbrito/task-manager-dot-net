@@ -3,7 +3,8 @@ using System.Net.Http.Json;
 using Microsoft.AspNetCore.Http;
 using TaskManager.Api.IntegrationTests.Common;
 using TaskManager.Api.IntegrationTests.Common.IntegrationApplicationFactory;
-using TaskManager.Application.DTOs.Response;
+using TaskManager.Application.Contracts.Common;
+using TaskManager.Application.Contracts.Projects;
 using TaskManager.TestCommon.Project;
 using Xunit.Abstractions;
 
@@ -25,7 +26,7 @@ public class CreateProjectIntegrationTests(
         var response = await HttpClient
             .PostAsJsonAsync("/api/v1/projects", projectRequest);
 
-        var projectResponse = await response.Content.ReadFromJsonAsync<ProjectResponseDto>();
+        var projectResponse = await response.Content.ReadFromJsonAsync<ProjectResponse>();
 
         // Assert
         response.Should().BeSuccessful();
@@ -48,13 +49,9 @@ public class CreateProjectIntegrationTests(
         // Act
         var response = await HttpClient
             .PostAsJsonAsync("/api/v1/projects", projectRequest);
-        var errorResponse = await response.Content.ReadFromJsonAsync<ErrorResponse>();
 
         // Assert
         response.Should().HaveError();
         response.Should().HaveStatusCode(HttpStatusCode.BadRequest);
-        errorResponse.Should().NotBeNull();
-        errorResponse?.StatusCode.Should().Be(StatusCodes.Status400BadRequest);
-        errorResponse?.Message.Should().Be(expectedMessage);
     }
 }

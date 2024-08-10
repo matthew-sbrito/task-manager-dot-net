@@ -6,7 +6,7 @@ namespace TaskManager.Infrastructure.Repositories;
 
 public class TaskRepository(DbContext context) : Repository<TaskEntity>(context), ITaskRepository
 {
-    public async Task<IEnumerable<TaskEntity>> GetTasksByProjectIdAsync(int projectId, CancellationToken cancellationToken = default)
+    public async Task<List<TaskEntity>> GetTasksByProjectIdAsync(int projectId, CancellationToken cancellationToken = default)
     {
         return await DbSet.Where(x => x.ProjectId == projectId).ToListAsync(cancellationToken);
     }

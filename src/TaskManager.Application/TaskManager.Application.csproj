@@ -6,18 +6,14 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
-    <ItemGroup>
-        <PackageReference Include="AutoMapper" />                
+    <ItemGroup>                    
+        <PackageReference Include="MediatR" />
+        <PackageReference Include="FluentValidation" />
         <PackageReference Include="FluentValidation.AspNetCore" />
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\TaskManager.Domain\TaskManager.Domain.csproj" />
-        <ProjectReference Include="..\TaskManager.Infrastructure\TaskManager.Infrastructure.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Common\" />
     </ItemGroup>
 
 </Project>

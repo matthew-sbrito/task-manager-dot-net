@@ -2,7 +2,8 @@ using System.Net;
 using System.Net.Http.Json;
 using TaskManager.Api.IntegrationTests.Common;
 using TaskManager.Api.IntegrationTests.Common.IntegrationApplicationFactory;
-using TaskManager.Application.DTOs.Response;
+using TaskManager.Application.Contracts.Common;
+using TaskManager.Application.Contracts.Projects;
 using Xunit.Abstractions;
 
 namespace TaskManager.Api.IntegrationTests.Authentication;
@@ -20,7 +21,7 @@ public class AuthenticationIntegrationTests(
 
         // Act
         var response = await HttpClient.GetAsync("/api/v1/projects");
-        var responseBody = await response.Content.ReadFromJsonAsync<IEnumerable<ProjectResponseDto>>();
+        var responseBody = await response.Content.ReadFromJsonAsync<IEnumerable<ProjectResponse>>();
 
         // Assert
         response.Should().BeSuccessful();
@@ -36,13 +37,9 @@ public class AuthenticationIntegrationTests(
 
         // Act
         var response = await HttpClient.GetAsync("/api/v1/projects");
-        var responseBody = await response.Content.ReadFromJsonAsync<ErrorResponse>();
 
         // Assert
         response.Should().HaveError();
         response.Should().HaveStatusCode(HttpStatusCode.Unauthorized);
-        
-        responseBody.Should().NotBeNull();
-        responseBody?.Message.Should().Be("User ID not found in headers");
     }
 }

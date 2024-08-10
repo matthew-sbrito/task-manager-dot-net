@@ -1,61 +1,33 @@
-using TaskManager.Application.DTOs.Request;
-using TaskManager.Application.DTOs.Response;
-using TaskManager.Domain.Entities;
-using TaskManager.Shared.Helpers;
-
 using Bogus.Extensions;
 using Bogus;
+using TaskManager.Application.Contracts.Projects;
 
 namespace TaskManager.TestCommon.Project;
 
 public static class ProjectFactory
 {
-    private static readonly Faker<ProjectRequestDto> ValidProjectRequestGenerator =
-        new Faker<ProjectRequestDto>()
+    private static readonly Faker<ProjectRequest> ValidProjectRequestGenerator =
+        new Faker<ProjectRequest>()
             .RuleFor(x => x.Title, f => f.Name.JobArea())
             .RuleFor(x => x.Description, f => f.Name.JobDescriptor());
 
-    private static readonly Faker<ProjectRequestDto> InvalidProjectRequestGenerator =
-        new Faker<ProjectRequestDto>()
+    private static readonly Faker<ProjectRequest> InvalidProjectRequestGenerator =
+        new Faker<ProjectRequest>()
             .RuleFor(x => x.Title, f => f.Name.JobArea().ClampLength(max: 4))
             .RuleFor(x => x.Description, f => f.Name.JobDescriptor().ClampLength(max: 4));
 
-    public static ProjectRequestDto CreateValidPayload()
+    public static ProjectRequest CreateValidPayload()
     {
         return ValidProjectRequestGenerator.Generate(1).First();
     }
 
-    public static ICollection<ProjectRequestDto> CreateValidPayload(int count)
+    public static ICollection<ProjectRequest> CreateValidPayload(int count)
     {
         return ValidProjectRequestGenerator.Generate(count);
     }
 
-    public static ProjectRequestDto CreateInvalidPayload()
+    public static ProjectRequest CreateInvalidPayload()
     {
         return InvalidProjectRequestGenerator.Generate(1).First();
-    }
-
-    public static ProjectEntity ToEntity(ProjectRequestDto request)
-    {
-        return new ProjectEntity
-        {
-            Id = 1,
-            Title = request.Title,
-            Description = request.Description,
-            CreatedAt = DateTimeHelper.UtcNow(),
-            CreatedByUserId = 1
-        };
-    }
-
-    public static ProjectResponseDto ToResponse(ProjectEntity entity)
-    {
-        return new ProjectResponseDto
-        {
-            Id = entity.Id,
-            Title = entity.Title,
-            Description = entity.Description,
-            CreatedAt = entity.CreatedAt,
-            CreatedByUserId = entity.CreatedByUserId
-        };
     }
 }

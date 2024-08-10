@@ -1,9 +1,13 @@
+using MediatR;
 using TaskManager.Api.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using TaskManager.Api.Endpoints.Common;
-using TaskManager.Application.DTOs.Request;
-using TaskManager.Application.DTOs.Response;
-using TaskManager.Application.Interfaces;
+using TaskManager.Application.AppTask.Commands.CreateTaskComment;
+using TaskManager.Application.AppTask.Commands.DeleteTask;
+using TaskManager.Application.AppTask.Commands.UpdateTask;
+using TaskManager.Application.Common.Interfaces;
+using TaskManager.Application.Contracts.AppTask;
+using TaskManager.Infrastructure.Extensions;
 
 namespace TaskManager.Api.Endpoints;
 
@@ -16,50 +20,71 @@ public class TaskEndpoint : IEndpoint
             .RequireTaskManagerAuthorization();
 
         group.MapPut("", UpdateTaskAsync)
-            .Produces<TaskResponseDto>()
-            .Produces<ErrorResponse>(StatusCodes.Status400BadRequest);
+            .Produces<TaskResponse>()
+            .Produces(StatusCodes.Status400BadRequest);
         
         group.MapDelete("", DeleteTaskAsync)
             .Produces(StatusCodes.Status204NoContent)
-            .Produces<ErrorResponse>(StatusCodes.Status400BadRequest);
+            .Produces(StatusCodes.Status400BadRequest);
         
         group.MapPost("/comment", CreateCommentTaskAsync)
-            .Produces<TaskCommentResponseDto>()
-            .Produces<ErrorResponse>(StatusCodes.Status400BadRequest);
+            .Produces<TaskCommentResponse>()
+            .Produces(StatusCodes.Status400BadRequest);
     }
 
-    private static async Task<IResult> UpdateTaskAsync(        
+    private static async Task<IResult> UpdateTaskAsync(
+        [FromServices] HttpContext context,
+        [FromServices] ISender sender,
         [FromRoute] int taskId,
-        [FromBody] UpdateTaskDto requestBody,
-        [FromServices] ITaskService taskService
+        [FromBody] UpdateTaskRequest request
     )
     {
-        var response = await taskService
-            .UpdateTaskAsync(taskId, requestBody);
+        var userId = context.GetUserId();
 
-        return response.ToHttpResponse();
+        if (userId.IsError)
+            return userId.Errors.ToProblemDetails();
+        
+        var command = new UpdateTaskCommand(userId.Value, taskId, request);
+        var response = await sender.Send(command);
+        
+        return response
+            .Match(Results.Ok, ErrorExtension.ToProblemDetails);
     }
 
     private static async Task<IResult> CreateCommentTaskAsync(        
+        [FromServices] HttpContext context,
+        [FromServices] ISender sender,
         [FromRoute] int taskId,
-        [FromBody] CreateTaskCommentDto requestBody,
-        [FromServices] ITaskService taskService
+        [FromBody] CreateTaskCommentRequest request
     )
     {
-        var response = await taskService
-            .CreateCommentAsync(taskId, requestBody);
+        var userId = context.GetUserId();
 
-        return response.ToHttpResponse();
+        if (userId.IsError)
+            return userId.Errors.ToProblemDetails();
+        
+        var command = new CreateTaskCommentCommand(userId.Value, taskId, request);
+        var response = await sender.Send(command);
+        
+        return response
+            .Match(x => Results.Created($"/tasks/{x.TaskId}", x), ErrorExtension.ToProblemDetails);
     }
 
     private static async Task<IResult> DeleteTaskAsync(
-        [FromRoute] int taskId,
-        [FromServices] ITaskService taskService
+        [FromServices] HttpContext context,
+        [FromServices] ISender sender,
+        [FromRoute] int taskId
     )
     {
-        var response = await taskService
-            .RemoveTaskAsync(taskId);
+        var userId = context.GetUserId();
 
-        return response.ToHttpResponse();
+        if (userId.IsError)
+            return userId.Errors.ToProblemDetails();
+        
+        var command = new DeleteTaskCommand(userId.Value, taskId);
+        var response = await sender.Send(command);
+        
+        return response
+            .Match(_ => Results.NoContent(), ErrorExtension.ToProblemDetails);
     }
 }

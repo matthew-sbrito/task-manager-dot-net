@@ -46,28 +46,25 @@ public abstract class Repository<TEntity>(DbContext context) : IRepository<TEnti
         return Task.CompletedTask;
     }
 
-    public Task DeleteAsync(TEntity entity)
+    public Task DeleteAsync(TEntity entity, int? deletedByUserId = null)
     {
         entity.DeletedAt = DateTimeHelper.UtcNow();
+        entity.DeletedByUserId = deletedByUserId;
         DbSet.Update(entity);
         return Task.CompletedTask;
     }
 
-    public Task DeleteRangeAsync(IEnumerable<TEntity> entities)
+    public Task DeleteRangeAsync(IEnumerable<TEntity> entities, int? deletedByUserId = null)
     {
         var updatedEntities = entities
             .Select(entity =>
             {
+                entity.DeletedByUserId = deletedByUserId;
                 entity.DeletedAt = DateTimeHelper.UtcNow();
                 return entity;
             });
 
         DbSet.UpdateRange(updatedEntities);
         return Task.CompletedTask;
-    }
-
-    public async Task SaveAsync()
-    {
-        await context.SaveChangesAsync();
     }
 }

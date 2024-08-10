@@ -2,13 +2,13 @@ using Microsoft.OpenApi.Models;
 using Asp.Versioning;
 using TaskManager.Api.Extensions;
 using TaskManager.Api.Filters;
-using TaskManager.Api.Middlewares;
+using TaskManager.Application.Common.Extensions;
 using TaskManager.Infrastructure.Configurations;
-using TaskManager.Application.Extensions;
+using TaskManager.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// TaskManager.Application configuration
+// TaskManager configuration
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 var apiVersion = new ApiVersion(1, 0);
 
@@ -39,17 +39,14 @@ AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 // Execute migration only is not testing
 if (!builder.Environment.IsEnvironment("Testing"))
-    DatabaseConfiguration.ExecuteMigrations(connectionString);
+    DatabaseMigrationHelper.ExecuteMigrations(connectionString);
 
 // Add app services to the container.
 builder.Services
-    .AddAutoMapper(typeof(Program))
-    .MapAutoMapper()
     .AddDatabase(connectionString)
     .AddValidators()
     .AddServices()
     .AddInitializers()
-    .AddTransient<HandleExceptionMiddleware>()
     .AddEndpoints()
     .AddHttpContextAccessor();
 
@@ -66,7 +63,6 @@ var versionGroup = app
 
 app
     .MapEndpoints(versionGroup)
-    .UseMiddleware<HandleExceptionMiddleware>()
     .UseHttpsRedirection();
 
 // Configure the HTTP request pipeline.
@@ -76,6 +72,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// await app.RunInitializers();
+await app.RunInitializers();
 
 app.Run();
