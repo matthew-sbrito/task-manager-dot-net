@@ -1,7 +1,5 @@
-using TaskManager.Infrastructure.Configurations;
 using Microsoft.EntityFrameworkCore;
 using TaskManager.Domain.Entities;
-using TaskManager.Infrastructure.Configurations.Entities;
 using TaskManager.Shared.Helpers;
 
 namespace TaskManager.Infrastructure;
@@ -28,14 +26,11 @@ public class TaskManagerDbContext(DbContextOptions<TaskManagerDbContext> options
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        var assembly = typeof(TaskManagerDbContext).Assembly;
+
         modelBuilder.HasDefaultSchema("public");
-
-        modelBuilder.ApplyConfiguration(new UserEntityConfiguration());
-        modelBuilder.ApplyConfiguration(new ProjectEntityConfiguration());
-        modelBuilder.ApplyConfiguration(new TaskEntityConfiguration());
-        modelBuilder.ApplyConfiguration(new TaskCommentEntityConfiguration());
-        modelBuilder.ApplyConfiguration(new TaskHistoryEntityConfiguration());
-
+        modelBuilder.ApplyConfigurationsFromAssembly(assembly);
+        
         base.OnModelCreating(modelBuilder);
     }
 
